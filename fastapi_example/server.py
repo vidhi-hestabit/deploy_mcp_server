@@ -16,10 +16,10 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-# Allow Render domain
+# Allow all hosts 
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=["*"]  # or restrict to your render domain
+    allowed_hosts=["*"]
 )
 
 app.mount("/echo", echo_mcp.streamable_http_app())
@@ -30,4 +30,10 @@ PORT = int(os.environ.get("PORT", 10000))
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=PORT, proxy_headers=True)
+    uvicorn.run(
+        "server:app",
+        host="0.0.0.0",
+        port=PORT,
+        proxy_headers=True,
+        forwarded_allow_ips="*"
+    )
