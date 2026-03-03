@@ -2,3 +2,4 @@ mcp
 langgraph
 tavily
 fastapi
+uvicorn
