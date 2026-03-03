@@ -1,7 +1,7 @@
 from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP(
-    name="MathServer",
+    name="math",
     stateless_http=True
 )
 

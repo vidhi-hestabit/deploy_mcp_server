@@ -1,7 +1,7 @@
 from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP(
-    name="EchoServer",
+    name="echo",
     stateless_http=True
 )
 
