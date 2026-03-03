@@ -16,14 +16,24 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-# Allow all hosts 
-app.add_middleware(
+# Create MCP sub-apps first
+echo_app = echo_mcp.streamable_http_app()
+math_app = math_mcp.streamable_http_app()
+
+# Add middleware directly to sub-apps
+echo_app.add_middleware(
     TrustedHostMiddleware,
     allowed_hosts=["*"]
 )
 
-app.mount("/echo", echo_mcp.streamable_http_app())
-app.mount("/math", math_mcp.streamable_http_app())
+math_app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=["*"]
+)
+
+# Mount them
+app.mount("/echo", echo_app)
+app.mount("/math", math_app)
 
 PORT = int(os.environ.get("PORT", 10000))
 
