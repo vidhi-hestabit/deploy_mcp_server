@@ -1,10 +1,11 @@
 import contextlib
+import os
 from fastapi import FastAPI
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 from echo_server import mcp as echo_mcp
 from math_server import mcp as math_mcp
-import os
 
-# Create a combined lifespan to manage both session managers
+
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
     async with contextlib.AsyncExitStack() as stack:
@@ -14,10 +15,18 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+# Allow Render domain
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=["*"]  # or restrict to your render domain
+)
+
 app.mount("/echo", echo_mcp.streamable_http_app())
 app.mount("/math", math_mcp.streamable_http_app())
 
-PORT = os.environ.get("PORT", 10000)
+PORT = int(os.environ.get("PORT", 10000))
+
 
 if __name__ == "__main__":
     import uvicorn
